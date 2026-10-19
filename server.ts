@@ -34,11 +34,14 @@ Bun.serve({
 
         const contentLengthHeader = fileRes.headers.get("content-length");
         const contentLength = contentLengthHeader ? parseInt(contentLengthHeader, 10) : undefined;
-
+        let b2Endpoint = process.env.B2_ENDPOINT || "https://s3.us-east-005.backblazeb2.com";
+        if (!b2Endpoint.startsWith("http://") && !b2Endpoint.startsWith("https://")) {
+          b2Endpoint = `https://${b2Endpoint}`;
+        }
         // 2. Setup S3 client for Backblaze B2
         const s3 = new S3Client({
-          region: process.env.B2_REGION || "us-west-004",
-          endpoint: process.env.B2_ENDPOINT,
+          region: process.env.B2_REGION || "us-east-005",
+          endpoint: b2Endpoint,
           credentials: {
             accessKeyId: process.env.B2_ACCESS_KEY_ID!,
             secretAccessKey: process.env.B2_SECRET_ACCESS_KEY!,
@@ -62,13 +65,8 @@ Bun.serve({
 
       } catch (err: any) {
         console.error("🔥 Transfer error:", err);
-        return new Response(JSON.stringify({ 
-          success: false, 
-          error: err.message, 
-          cause: err.cause?.message || "none",
-          stack: err.stack 
-        }, null, 2), { status: 500 });
-      
+        return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500 });
+      }
     }
 
     return new Response("Bot bridge runner is active!", { status: 200 });
