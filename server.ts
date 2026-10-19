@@ -1,5 +1,5 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-
+import { Readable } from "node:stream";
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 // Spin up a fast server using Bun's native HTTP server
 console.log(`🔍 Debug: Attempting to bind to port ${PORT} (process.env.PORT was: ${process.env.PORT})`);
@@ -39,15 +39,14 @@ Bun.serve({
           b2Endpoint = `https://${b2Endpoint}`;
         }
         // 2. Setup S3 client for Backblaze B2
-        const s3 = new S3Client({
-          region: process.env.B2_REGION || "us-east-005",
-          endpoint: b2Endpoint,
-          credentials: {
-            accessKeyId: process.env.B2_ACCESS_KEY_ID!,
-            secretAccessKey: process.env.B2_SECRET_ACCESS_KEY!,
-          },
-          requestChecksumCalculation: "WHEN_REQUIRED",
-        });
+        
+        await s3.send(new PutObjectCommand({
+          Bucket: process.env.B2_BUCKET_NAME!,
+          Key: b2ObjectKey,
+          Body: Readable.fromWeb(fileRes.body as any), // <-- Update this line
+          ContentLength: contentLength,
+          ContentType: fileRes.headers.get("Content-Type") || "application/octet-stream",
+        }));
 
         console.log(`📤 Streaming to B2 -> ${b2ObjectKey}`);
 
