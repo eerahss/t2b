@@ -2,13 +2,14 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 // Spin up a fast server using Bun's native HTTP server
+console.log(`🔍 Debug: Attempting to bind to port ${PORT} (process.env.PORT was: ${process.env.PORT})`);
 Bun.serve({
   //port: process.env.PORT || 3000,
   port: PORT,
   hostname: "0.0.0.0",
   async fetch(req) {
     const url = new URL(req.url);
-    if (url.pathname === "/") {
+  if (url.pathname === "/") {
       return new Response("Bridge is working!", { status: 200 });
     }
     // Endpoint your Cloudflare Worker will trigger
