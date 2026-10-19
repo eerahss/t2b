@@ -62,8 +62,13 @@ Bun.serve({
 
       } catch (err: any) {
         console.error("🔥 Transfer error:", err);
-        return new Response(JSON.stringify({ success: false, error: err.message }), { status: 500 });
-      }
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: err.message, 
+          cause: err.cause?.message || "none",
+          stack: err.stack 
+        }, null, 2), { status: 500 });
+      
     }
 
     return new Response("Bot bridge runner is active!", { status: 200 });
