@@ -25,6 +25,7 @@ Bun.serve({
 
         // 1. Fetch file from TorBox using your secret API key safely hidden here
         console.log(`📥 Downloading from TorBox...`);
+        const cleanUrl = body.torboxUrl.trim();
         const fileRes = await fetch(body.torboxUrl);
 
         if (!fileRes.ok || !fileRes.body) {
