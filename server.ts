@@ -2,7 +2,8 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
 // Spin up a fast server using Bun's native HTTP server
 Bun.serve({
-  port: process.env.PORT || 3000,
+  //port: process.env.PORT || 3000,
+  port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
   async fetch(req) {
     const url = new URL(req.url);
 
