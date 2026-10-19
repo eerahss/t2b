@@ -8,7 +8,9 @@ Bun.serve({
   hostname: "0.0.0.0",
   async fetch(req) {
     const url = new URL(req.url);
-
+    if (url.pathname === "/") {
+      return new Response("Bridge is working!", { status: 200 });
+    }
     // Endpoint your Cloudflare Worker will trigger
     if (url.pathname === "/transfer" && req.method === "POST") {
       try {
