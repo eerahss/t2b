@@ -39,22 +39,22 @@ Bun.serve({
           b2Endpoint = `https://${b2Endpoint}`;
         }
         // 2. Setup S3 client for Backblaze B2
+        const s3 = new S3Client({
+          region: process.env.B2_REGION || "us-east-005",
+          endpoint: b2Endpoint,
+          credentials: {
+            accessKeyId: process.env.B2_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.B2_SECRET_ACCESS_KEY!,
+          },
+          requestChecksumCalculation: "WHEN_REQUIRED",
+        });
+
+        console.log(`📤 Streaming to B2 -> ${b2ObjectKey}`);
         
         await s3.send(new PutObjectCommand({
           Bucket: process.env.B2_BUCKET_NAME!,
           Key: b2ObjectKey,
           Body: Readable.fromWeb(fileRes.body as any), // <-- Update this line
-          ContentLength: contentLength,
-          ContentType: fileRes.headers.get("Content-Type") || "application/octet-stream",
-        }));
-
-        console.log(`📤 Streaming to B2 -> ${b2ObjectKey}`);
-
-        // 3. Pipe stream directly to B2 (Bun handles this safely with low memory)
-        await s3.send(new PutObjectCommand({
-          Bucket: process.env.B2_BUCKET_NAME!,
-          Key: b2ObjectKey,
-          Body: fileRes.body as any,
           ContentLength: contentLength,
           ContentType: fileRes.headers.get("Content-Type") || "application/octet-stream",
         }));
