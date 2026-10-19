@@ -10,8 +10,8 @@ RUN bun install --production
 # Copy the rest of the application code
 COPY . .
 
-# Expose port (Railway will map it automatically)
+# Expose port 
 EXPOSE 3000
 
-# Start the server using Bun
-CMD ["bun", "run", "server.ts"]
+# Use shell form so Railway's dynamic $PORT variable is correctly picked up
+CMD bun run server.ts
